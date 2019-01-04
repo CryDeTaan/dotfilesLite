@@ -1,0 +1,132 @@
+"   ____            ____      _____                 _      __     ___
+"  / ___|_ __ _   _|  _ \  __|_   _|_ _  __ _ _ __ ( )___  \ \   / (_)_ __ ___
+" | |   | '__| | | | | | |/ _ \| |/ _` |/ _` | '_ \|// __|  \ \ / /| | '_ ` _ \
+" | |___| |  | |_| | |_| |  __/| | (_| | (_| | | | | \__ \   \ V / | | | | | | |
+"  \____|_|   \__, |____/ \___||_|\__,_|\__,_|_| |_| |___/    \_/  |_|_| |_| |_|
+"             |___/
+
+" ---------- Vundle ---------- "
+filetype off    " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required.
+Plugin 'VundleVim/Vundle.vim'
+
+" Status/tabline for vim.
+Plugin 'vim-airline/vim-airline'
+
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+
+" ----------------Vim Settings---------------- "
+" Set the <Leader Variable. The default is '\', so if unset <leader> = '\'.
+let mapleader = ','
+
+" Make use of spaces when using tab, but still backpace spaces as tabs.
+set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab
+
+"Make backspace behave like other editors
+set backspace=indent,eol,start
+
+" Source vim configuration upon save
+if has ('autocmd') " Remain compatible with earlier versions
+ augroup vimrc
+    autocmd! BufWritePost $MYVIMRC source % | echo "Reloaded " . $MYVIMRC | redraw
+  augroup END
+endif " has autocmd
+
+" Opening Vim help in a vertical split window
+" See the following for alternatives:
+" https://stackoverflow.com/questions/630884/opening-vim-help-in-a-vertical-split-window
+autocmd FileType help wincmd L
+
+" ----------------Spell checking---------------- "
+" Enable spell check
+nmap <silent> <Leader>esc :set spell spelllang=en_gb <bar> set nocursorline<cr>
+
+" Disable spell check
+nmap <silent> <Leader>dsc :set nospell <bar> set cursorline<cr>
+
+" ----------------Vim Visuals---------------- "
+" Custom theme
+colorscheme crydetaan
+
+syntax enable       " Syntax highlighting
+set number          " Shows line line numbers in the buffer.
+set laststatus=2    " Show Status line, also required by Vim Airline.
+set cursorline      " Shows cursorline
+
+
+" ----------------Vim Mappings---------------- "
+" Esc in insert mode.
+:inoremap jj <Esc>
+
+" Edit vim config
+nmap <Leader>ve :tabedit ~/.vimrc<cr>
+
+
+" ----------------Tabs, buffers, and windows---------------- "
+" Close the current tab
+nmap <Leader>tc :tabc<cr>
+
+" Working with Buffers"
+nmap <silent> <C-n> :bn<cr>
+nmap <silent> <C-p> :bp<cr>
+
+
+" ----------------Airline Settings---------------- "
+"  Some nice upgrades for the standard status bar.
+let g:airline_theme = 'crydetaan'                       " Theme, but custom theme to follow.
+set noshowmode                                          " Let Airline handle the mode visuals.
+
+let g:airline#extensions#tabline#enabled = 1            " Enables the tab line, to see tabs and buffers at the top.
+let g:airline#extensions#tabline#show_tabs = 1          " Displaying tabs, regardless of number.
+let g:airline#extensions#tabline#show_close_button = 0  " Configure whether close button should be shown.
+
+
+let g:airline#extensions#tabline#buffer_idx_mode = 0    " Displaying index of the buffer.
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>- <Plug>AirlineSelectPrevTab
+nmap <leader>+ <Plug>AirlineSelectNextTab
+
+" ----------------Split Config---------------- "
+" Specify the areas of the screen where the splits should occur
+set splitbelow
+set splitright
+
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+
+" -----------------Search----------------- "
+
+set hlsearch	" Enable search highlighting.
+set incsearch	" Start highlighting first occurrence of match as typing happens
+set ignorecase	" Ignore case in vim search.
+
+
+"Remove search highlighting, default is to remain highlighted until new search is performed.
+nmap <silent> <Leader><space> :nohlsearch<cr>
+
+" Sets search to be case sensitive
+nmap <Leader>sc :set noignorecase<cr>
+
+" Sets search to be case insensitive
+nmap <Leader>si :set ignorecase<cr>

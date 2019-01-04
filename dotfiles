@@ -1,0 +1,428 @@
+#!/bin/bash
+
+# defaults for file & config locations
+gitpath="$HOME/.dotfiles"
+oh_my_zsh="$HOME/.oh-my-zsh"
+zsh_rc="$HOME/.zshrc"
+vim_conf_dir="$HOME/.vim"
+vim_rc="$HOME/.vimrc"
+tmux_conf="$HOME/.tmux.conf"
+dotfilesd="$HOME/.dotfiles.d"
+
+# Configurations this script knows how to setup
+declare -a configurations=("all" "zsh" "vim" "tmux")
+
+# Log file location
+log_file="log.txt"
+temp_log="$(mktemp)"
+
+#####################
+# Helper functions  #
+#####################
+
+# Colour helper functions
+function echo_start() { command echo -e "$(tput setaf 4; tput bold; tput smul)$1$(tput sgr0)$2\n";} # Start Script
+function echo_red() { command echo -e " $(tput setaf 1)[!]$(tput sgr0) $*"; } # When a task fails
+function echo_func_start() { command echo -e " $(tput setaf 4; tput bold;)[*]$(tput sgr0) $*"; } # When running a function
+
+# Execution helper functions
+function curl() { command curl -fsSL "$1" -o "$2"; }
+
+# Check if user provided argument is in the $configurations array
+function in_configuration_array() {
+
+    for element in ${configurations[@]}; do
+
+        if [[ "$1" == "$element" ]]; then
+            return 0
+        else
+            continue
+        fi
+    done
+
+    return 1
+
+}
+
+
+# Check user provided configurations.
+function validate_configuration() {
+
+    # Validate users provided arguments as valid configuration
+
+    valid_configs=()
+    local invalid_configs=()
+
+    for config in $@; do
+
+        if in_configuration_array "$config"; then
+            valid_configs+=($config)
+
+        else
+            invalid_configs+=($config)
+
+        fi
+
+    done
+
+    if [ -n "$invalid_configs" ]; then
+
+        # Create unique list of invalid configs in an array
+        invalid_configs=($(echo "${invalid_configs[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+        echo_red "The following are invalid configurations and will be omited: $(echo ${invalid_configs[*]} | sed 's/ /, /g')"
+
+    fi
+
+
+    if [ -z "$valid_configs" ]; then
+
+        echo_red "No valid configurations provided, please see 'Valid Configs'."
+
+    fi
+
+    # Create unique list of invalid configs in an array
+    valid_configs=($(echo "${valid_configs[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+
+    return 0
+
+}
+
+
+# Debugging
+
+get_Time () { Time=$(date +%Y-%m-%d\ %H:%M:%S) ; }
+
+write_to_log()
+{
+
+    DateTime=`date "+%Y/%m/%d %H:%M:%S"`
+
+    if [ "$1" == "WARN" ]; then
+        debug="$(tput setaf 3)WARN$(tput sgr0)"
+        message="${*:2}"
+    else
+        message="${*:1}"
+        debug="INFO"
+    fi
+
+    echo "${DateTime} | ${debug}  | ${message}">> ${log_file}
+
+    if [[ $(wc -l <${temp_log}) -ge 1 ]]; then
+        temp_log_content=$(<${temp_log})
+
+        echo -e "Output:\n$temp_log_content">> ${log_file}
+
+    fi
+
+}
+
+write_error()
+{
+    message="${*:1}"
+
+    DateTime=`date "+%Y/%m/%d %H:%M:%S"`
+
+    if [[ $(wc -l <${temp_log}) -ge 1 ]]; then
+        temp_log_content=$(<${temp_log})
+
+    fi
+
+    echo "${DateTime} | $(tput setaf 1)ERROR$(tput sgr0) | $message">> ${log_file}
+    echo -e "Output:\n$temp_log_content">> ${log_file}
+
+    echo_red "Installation failed, please check $log_file for errors"
+
+    echo -e "\nTail of $log_file:\n`tail $log_file`"
+
+    exit 1
+
+}
+
+##########################
+# Preparation functions  #
+##########################
+
+preparing_git(){
+    message="GIT - Cloning the dotfilesLite git repo"
+    if [[ ! -d "gitpath" ]]; then
+        git clone https://github.com/CryDeTaan/dotfilesLite.git $gitpath &>$temp_log  \
+            && write_to_log $message \
+            || write_error $message
+    fi
+}
+
+
+
+
+
+#####################
+# Execution targets #
+#####################
+
+echo '''
+      _       _    __ _ _
+   __| | ___ | |_ / _(_) | ___  ___
+  / _` |/ _ \| __| |_| | |/ _ \/ __|
+ | (_| | (_) | |_|  _| | |  __/\__ \
+(_)__,_|\___/ \__|_| |_|_|\___||___/
+'''
+
+function showusage() {
+
+        cat <<EOF
+    Usage: dotfiles [option] [configs]
+
+    Examples:
+        dotfiles --install all
+        dotfiles --install vim
+        dotfiles -i vim
+        dotfiles -i zsh
+
+    Options:
+        -i, --install [configs]     Install configurations (See Valid Configs)
+
+    Valid Configs:
+        ${configurations[@]}
+EOF
+
+}
+
+function install() {
+
+    validate_configuration "$@"
+
+
+    #TODO: Prepare git.
+
+    if [[ "${valid_configs[0]}" == "all" ]]; then
+
+        valid_configs=(${configurations[*]:1})
+    fi
+
+    echo_start "Installing the following configurations:" " ${valid_configs[*]}"
+
+    for config in ${valid_configs[@]}; do
+
+       install_$config
+
+    done
+
+}
+
+
+
+#####################
+# Executing configs #
+#####################
+
+function install_vim () {
+
+    if ! hash vim 2>/dev/null; then
+        echo_red "Vim not installed or in the \$PATH. Omiting the installation of Vim."
+        return
+    fi
+
+    echo_func_start "Installing Vim configuration"
+
+    # Set vimrc
+    message="VIM - Creating Vimrc symlink"
+    ln -sf $gitpath/rc/vimrc $vim_rc &>$temp_log \
+        && write_to_log $message \
+        || write_error $message
+
+    # Set Vim colour scheme
+    if [[ ! -d "$vim_conf_dir/colors/" ]]; then
+        message="WARN VIM - No Vim colourscheme directory found, creating it now."
+        mkdir -p $vim_conf_dir/colors/ &>$temp_log \
+            && write_to_log $message \
+            || write_error $message
+    fi
+
+    message="VIM - Creating Vim colourscheme symlink"
+    ln -sf $gitpath/config/vim/colour_scheme/crydetaan.vim $vim_conf_dir/colors/ &>$temp_log \
+        && write_to_log $message \
+        || write_error $message
+
+
+    # Set airline colour scheme
+    if [[ ! -d "$vim_conf_dir/autoload/airline/themes/" ]]; then
+        message="WARN VIM - No airline colourscheme directory found, creating it now."
+        mkdir -p $vim_conf_dir/autoload/airline/themes/ &>$temp_log \
+            && write_to_log $message \
+            || write_error $message
+    fi
+
+    message="VIM - Creating airline colourscheme symlink"
+    ln -sf $gitpath/config/vim/colour_scheme/crydetaan_airline.vim $vim_conf_dir/autoload/airline/themes/crydetaan.vim &>$temp_log \
+        && write_to_log $message \
+        || write_error $message
+
+
+    # Install Vundle
+    message="VIM - Cloning Vundle"
+    if [[ ! -d "$vim_conf_dir/bundle/Vundle.vim" ]]; then
+        git clone https://github.com/gmarik/Vundle.vim $vim_conf_dir/bundle/Vundle.vim &>$temp_log  \
+            && write_to_log $message \
+            || write_error $message
+    fi
+
+    # Install vim plugins using vundle
+    message="VIM - Installing Vim Plugins using Vundle"
+    vim +PluginInstall +qall 2>$temp_log  \
+        && write_to_log $message \
+        || write_error $message
+
+}
+
+
+function install_zsh () {
+
+    if ! hash zsh 2>/dev/null; then
+        echo_red "ZSH not inrcstalled or in the \$PATH. Omiting the installation of ZSH."
+        return
+    fi
+
+    echo_func_start "Installing zsh configuration"
+
+    # Installing oh-my-zsh
+    if [[ ! -d "$oh_my_zsh/" ]]; then
+        message="ZSH - Downloading oh-my-zsh installer."
+        local temp="$(mktemp)"
+        curl "https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh" $temp &>$temp_log  \
+            && write_to_log $message \
+            || write_error $message
+
+
+        sed -i -r "/env zsh/d" $temp
+
+        message="ZSH - Running the oh-my-zsh installer."
+        sh $temp &>$temp_log  \
+            && write_to_log $message \
+            || write_error $message
+    else
+        write_to_log "ZSH - ZSH is already installed."
+    fi
+
+
+    # Set zshrc
+    message="ZSH - Creating zshrc symlink"
+    ln -sf $gitpath/rc/zshrc $zsh_rc &>$temp_log \
+        && write_to_log $message \
+        || write_error $message
+
+    # Set zsh colour scheme
+    if [[ ! -d "$oh_my_zsh/custom/themes/" ]]; then
+        message="ZSH - No zsh colourscheme directory found, creating it now."
+        mkdir -p $oh_my_zsh/custom/themes/ &>$temp_log \
+            && write_to_log $message \
+            || write_error $message
+    fi
+
+    message="ZSH - Creating zsh colourscheme symlink"
+    ln -sf $gitpath/config/zsh/oh-my-zsh/themes/crydetaan.zsh-theme \
+        $oh_my_zsh/custom/themes/crydetaan.zsh-theme &>$temp_log \
+        && write_to_log $message \
+        || write_error $message
+
+    # Creating ~/.dotfiles.d/zsh.d directory
+    if [[ ! -d "$dotfilesd/zshrc.d/" ]]; then
+        message="ZSH - No zshrc.d directory found, creating it now."
+        mkdir -p $dotfilesd/zshrc.d/ &>$temp_log \
+            && write_to_log $message \
+            || write_error $message
+    fi
+
+    # Making sure local_aliases.zsh exists.
+    touch $gitpath/dotfiles.d/zshrc.d/local_aliases.zsh
+
+    # Symlink other files
+    message="ZSH - Creating zsh.d symlinks"
+    ln -sf $gitpath/dotfiles.d/zshrc.d/*.zsh $dotfilesd/zshrc.d &>$temp_log \
+        && write_to_log $message \
+        || write_error $message
+
+    # Install 3rd party plugins
+    if [[ ! -d "$oh_my_zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
+
+        message="ZSH - Cloning ZSH Syntax Highlighting"
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git &>$temp_log \
+            $oh_my_zsh/custom/plugins/zsh-syntax-highlighting \
+            && write_to_log $message \
+            || write_error $message
+
+    else
+        write_to_log "ZSH - Syntax Highlighting already installed"
+    fi
+
+    if [[ ! -d "$oh_my_zsh/custom/plugins/zsh-autosuggestions" ]]; then
+
+        message="ZSH - Cloning ZSH Autosuggestions"
+        git clone https://github.com/zsh-users/zsh-autosuggestions.git &>$temp_log \
+            $oh_my_zsh/custom/plugins/zsh-autosuggestions \
+            && write_to_log $message \
+            || write_error $message
+
+    else
+        write_to_log "ZSH - Autosuggestions already installed"
+    fi
+
+
+}
+
+
+function install_tmux () {
+
+    echo_func_start "Installing tmux configuration"
+
+}
+
+######################
+# Start of execution #
+######################
+
+# Check if needed binaries are installed on system.
+for cmd in "curl" "git"; do
+
+    if ! hash $cmd 2>/dev/null; then
+        no_cmd+=($cmd)
+    fi
+
+done
+
+if [ -n "$no_cmd" ]; then
+    echo_red "Some command are missing, please install them and try again: $(echo ${no_cmd[*]} | sed 's/ /, /g')."
+    exit 2
+fi
+
+# Check if provided arguments are valid and set execution target.
+if [[ $# -gt 1 ]]; then
+
+    case $1 in
+
+        -i|--install)
+        execution_target="install"
+        shift # Shift user provided arguments one position to the left, i.e. $2 -> $1
+        ;;
+
+        -h|--help)
+        execution_target="showusage"
+        ;;
+
+        *)
+        execution_target="showusage"
+        ;;
+
+    esac
+
+else
+
+    execution_target="showusage"
+
+fi
+
+# Prepare git
+preparing_git
+
+# Execute target
+$execution_target $@
