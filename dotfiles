@@ -145,7 +145,7 @@ write_error()
 
 preparing_git(){
     message="GIT - Cloning the dotfilesLite git repo"
-    if [[ ! -d "gitpath" ]]; then
+    if [[ ! -d "$gitpath" ]]; then
         git clone https://github.com/CryDeTaan/dotfilesLite.git $gitpath &>$temp_log  \
             && write_to_log $message \
             || write_error $message
@@ -279,7 +279,7 @@ function install_vim () {
 function install_zsh () {
 
     if ! hash zsh 2>/dev/null; then
-        echo_red "ZSH not inrcstalled or in the \$PATH. Omiting the installation of ZSH."
+        echo_red "ZSH not installed or in the \$PATH. Omiting the installation of ZSH."
         return
     fi
 
