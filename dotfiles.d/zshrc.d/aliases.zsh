@@ -3,7 +3,7 @@
 
 # Simple aliases
 
-alias dotfiles="bash <(curl -fsSL https://raw.githubusercontent.com/crydetaan/dotfiles2.0/master/dotfiles)"
+alias dotfiles="bash <(curl -fsSL https://raw.githubusercontent.com/crydetaan/dotfilesLite/master/dotfiles)"
 alias dotconf="vim ~/.dotfiles/dotfiles"
 
 alias :q="exit"

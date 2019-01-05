@@ -2,7 +2,7 @@
 #
 # Commands specified here run on shell startup
 
-# Run Archey if available! Install with: brew install archey
-if hash archey 2>/dev/null; then
-    archey -c -o
+# Run neofetch if available!
+if hash neofetch 2>/dev/null; then
+    neofetch --memory_display bar --color_blocks off
 fi
