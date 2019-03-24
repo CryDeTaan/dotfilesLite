@@ -4,6 +4,7 @@
 
 # Run neofetch if available!
 if hash neofetch 2>/dev/null; then
+    echo
     neofetch \
         --colors 29 29 6 8 2 250 \
         --color_blocks off \

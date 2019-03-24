@@ -20,6 +20,9 @@ Plugin 'VundleVim/Vundle.vim'
 " Status/tabline for vim.
 Plugin 'vim-airline/vim-airline'
 
+" Ctrl+p for easy file navigation
+Plugin 'ctrlpvim/ctrlp.vim'
+
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -76,8 +79,8 @@ nmap <Leader>ve :tabedit ~/.vimrc<cr>
 nmap <Leader>tc :tabc<cr>
 
 " Working with Buffers"
-nmap <silent> <C-n> :bn<cr>
-nmap <silent> <C-p> :bp<cr>
+nmap <silent> <C-n> :bnext<cr>
+nmap <silent> <C-b> :bprevious<cr>
 
 
 " ----------------Airline Settings---------------- "
