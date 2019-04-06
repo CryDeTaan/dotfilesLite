@@ -63,7 +63,7 @@ ZSH_THEME="crydetaan"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-plugins=(git docker httpie colored-man-pages zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(virtualenv git docker httpie colored-man-pages zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
