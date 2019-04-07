@@ -3,7 +3,7 @@
 # Commands specified here run on shell startup
 
 # Run neofetch if available!
-if hash neofetch 2>/dev/null; then
+if hash neofetch 2>/dev/null && [[ $(who | wc -l) -eq 2 ]]; then
     echo
     neofetch \
         --colors 29 29 6 8 2 250 \
