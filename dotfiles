@@ -13,7 +13,7 @@ dotfilesd="$HOME/.dotfiles.d"
 declare -a configurations=("all" "zsh" "vim" "tmux")
 
 # Log file location
-log_file="log.txt"
+log_file="$gitpath/logs/$(date '+%d-%m-%Y_%H:%M:%S').txt"
 temp_log="$(mktemp)"
 
 #####################
@@ -96,7 +96,7 @@ get_Time () { Time=$(date +%Y-%m-%d\ %H:%M:%S) ; }
 write_to_log()
 {
 
-    DateTime=`date "+%Y/%m/%d %H:%M:%S"`
+    DateTime=`date "+%d-%m-%Y %H:%M:%S"`
 
     if [ "$1" == "WARN" ]; then
         debug="$(tput setaf 3)WARN$(tput sgr0)"
@@ -121,7 +121,7 @@ write_error()
 {
     message="${*:1}"
 
-    DateTime=`date "+%Y/%m/%d %H:%M:%S"`
+    DateTime=`date "+%d-%m-%Y %H:%M:%S"`
 
     if [[ $(wc -l <${temp_log}) -ge 1 ]]; then
         temp_log_content=$(<${temp_log})
@@ -151,10 +151,6 @@ preparing_git(){
             || write_error $message
     fi
 }
-
-
-
-
 
 #####################
 # Execution targets #
@@ -191,9 +187,6 @@ EOF
 function install() {
 
     validate_configuration "$@"
-
-
-    #TODO: Prepare git.
 
     if [[ "${valid_configs[0]}" == "all" ]]; then
 
@@ -293,11 +286,8 @@ function install_zsh () {
             && write_to_log $message \
             || write_error $message
 
-
-        sed -i -r "/env zsh/d" $temp
-
         message="ZSH - Running the oh-my-zsh installer."
-        sh $temp &>$temp_log  \
+        RUNZSH='no' sh $temp | tee $temp_log  \
             && write_to_log $message \
             || write_error $message
     else
@@ -382,7 +372,7 @@ function install_tmux () {
 ######################
 
 # Check if needed binaries are installed on system.
-for cmd in "curl" "git"; do
+for cmd in "curl" "git" "zsh"; do
 
     if ! hash $cmd 2>/dev/null; then
         no_cmd+=($cmd)
@@ -391,7 +381,7 @@ for cmd in "curl" "git"; do
 done
 
 if [ -n "$no_cmd" ]; then
-    echo_red "Some command are missing, please install them and try again: $(echo ${no_cmd[*]} | sed 's/ /, /g')."
+    echo_red "Some prerequisite are missing, please install them and try again: $(echo ${no_cmd[*]} | sed 's/ /, /g')."
     exit 2
 fi
 

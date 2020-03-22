@@ -20,6 +20,9 @@ Plugin 'VundleVim/Vundle.vim'
 " Status/tabline for vim.
 Plugin 'vim-airline/vim-airline'
 
+" Shows a git diff summary in the sign column
+Plugin 'vim-gitgutter'
+
 " Ctrl+p for easy file navigation
 Plugin 'ctrlpvim/ctrlp.vim'
 
