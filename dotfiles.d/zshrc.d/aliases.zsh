@@ -16,9 +16,11 @@ alias weather="curl -s wttr.in/~Stellenbosch | grep -v 'New fea' | grep -v Foll"
 mcd () { mkdir -p "$@" && cd "$@"; }
 
 # exa Aliais
-alias tree="exa --tree --level=4 --long"
-alias ls="exa --long --header --git"
-alias ll="exa --all --all --long --header --git"
+if hash exa 2>/dev/null; then
+    alias tree="exa --tree --level=4 --long"
+    alias ls="exa --long --header --git"
+    alias ll="exa --all --all --long --header --git"
+fi
 
-alias cat="bat"
+hash bat 2>/dev/null && alias cat="bat"
 
