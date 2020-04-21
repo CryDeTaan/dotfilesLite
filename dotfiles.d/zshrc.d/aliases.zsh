@@ -15,7 +15,7 @@ alias ss="pngpaste /tmp/pngpaste.png; curl -s -F sunset=86400 -F c=@- -F p=1 htt
 alias weather="curl -s wttr.in/~Stellenbosch | grep -v 'New fea' | grep -v Foll"
 mcd () { mkdir -p "$@" && cd "$@"; }
 
-# exa Aliais
+# exa Aliases
 if hash exa 2>/dev/null; then
     alias tree="exa --tree --level=4 --long"
     alias ls="exa --long --header --git"
@@ -24,3 +24,6 @@ fi
 
 hash bat 2>/dev/null && alias cat="bat"
 
+# Laravel Aliases
+alias artisan='php artisan'
+alias tinker='php artisan tinker'
