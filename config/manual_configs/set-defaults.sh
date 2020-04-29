@@ -64,6 +64,9 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
+# Fix the scroll direction, they claim its natural by default, they are wrong
+defaults write -g com.apple.swipescrolldirection -bool FALSE
+
 ###############################################################################
 # Screen                                                                      #
 ###############################################################################
