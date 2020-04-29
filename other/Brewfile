@@ -18,7 +18,17 @@ brew "mysql", restart_service: true
 brew "neofetch"
 # General-purpose scripting language
 brew "php", restart_service: true
+
+# UI Apps
 cask "dozer"
 cask "rectangle"
+cask "google-chrome"
+cask "notion"
+cask "tableplus"
+cask "iterm2"
+cask "postman"
+cask "docker"
+
+# Appstore Apps
 mas "Enpass", id: 732710998
 mas "Telegram", id: 747648890
