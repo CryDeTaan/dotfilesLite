@@ -18,6 +18,8 @@ brew "mysql", restart_service: true
 brew "neofetch"
 # General-purpose scripting language
 brew "php", restart_service: true
+# User-friendly cURL replacement (command-line HTTP client)
+brew "httpie"
 
 # UI Apps
 cask "dozer"
