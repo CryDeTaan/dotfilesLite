@@ -46,7 +46,7 @@ case "$OSTYPE" in
             export FZF_DEFAULT_OPTS="
             --layout=reverse
             --info=inline
-            --height=80%
+            --height=20%
             --multi
             --preview-window=:hidden
             --preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && (exa --tree --level=4 --long  {} | less)) || echo {} 2> /dev/null | head -200'

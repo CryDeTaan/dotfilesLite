@@ -20,6 +20,12 @@ brew "neofetch"
 brew "php", restart_service: true
 # User-friendly cURL replacement (command-line HTTP client)
 brew "httpie"
+# Kubernetes command-line interface
+brew "kubernetes-cli"
+# Microsoft Azure CLI 2.0
+brew "azure-cli"
+# Lightweight and flexible command-line JSON processor
+brew "jq"
 
 # UI Apps
 cask "dozer"
@@ -30,6 +36,7 @@ cask "tableplus"
 cask "iterm2"
 cask "postman"
 cask "docker"
+cask "sketch"
 
 # Appstore Apps
 mas "Enpass", id: 732710998
