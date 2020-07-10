@@ -63,7 +63,7 @@ ZSH_THEME="crydetaan"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-plugins=(z fzf virtualenv git docker docker-compose httpie colored-man-pages zsh-syntax-highlighting zsh-autosuggestions encode64 urltools)
+plugins=(z fzf virtualenv git docker docker-compose httpie colored-man-pages zsh-syntax-highlighting zsh-autosuggestions encode64 urltools kubectl)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -104,3 +104,6 @@ if [ -d $HOME/.dotfiles.d/zshrc.d ]; then
     source $file
   done
 fi
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
+
