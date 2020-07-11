@@ -8,6 +8,9 @@ alias dotconf="vim ~/.dotfiles/dotfiles"
 
 alias :q="exit"
 
+alias cprompt='printf "\e[38;5;237m------------------------------------------------------------\n" && PS1="$FG[075]~ $FG[046]» %{$reset_color%}"'
+alias nprompt='source $HOME/.dotfiles/config/zsh/oh-my-zsh/themes/crydetaan.zsh-theme'
+
 alias ve="vim ~/.dotfiles/rc/vimrc"
 
 alias doit='sudo $(fc -ln -1)'
