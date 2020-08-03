@@ -287,7 +287,7 @@ function install_zsh () {
             || write_error $message
 
         message="ZSH - Running the oh-my-zsh installer."
-        RUNZSH='no' sh $temp | tee $temp_log  \
+        sh $temp --unattended | tee $temp_log  \
             && write_to_log $message \
             || write_error $message
     else
