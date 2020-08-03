@@ -26,6 +26,8 @@ brew "kubernetes-cli"
 brew "azure-cli"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
+# mobile-shell - Remote terminal application
+brew "mosh"
 
 # UI Apps
 cask "dozer"
